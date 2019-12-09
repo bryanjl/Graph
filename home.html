@@ -1,0 +1,241 @@
+<html>
+
+  <head>
+    <link rel="stylesheet" href="styles.css">
+  </head>
+
+  <body>
+
+    <form>
+      <textarea id="user-input"></textarea>
+    </form>
+    <button type="button" onclick="originalGraph()">Original Array</button>
+    <button type="button" onclick="maxHeapGraph()">Max Heap Sorted Array</button>
+    <button type="button" onclick="heapSortedGraph()">Heap Sorted Array</button>
+
+    <p id="post-here"></p>
+
+  <!-- graph section-->
+    <div class="graph-cont" id="graph-cont"></div>
+
+
+
+    <script>
+
+/*-----------------button clicked functions------------------*/
+
+      /*print the array as entered by user input*/
+      function originalGraph(){
+        /*clear the div that contains the graph*/
+        document.getElementById('graph-cont').innerHTML = '';
+
+        /*get user input and make array*/
+        var userInp =  document.getElementById('user-input').value;
+        var userArr = userInp.split(',').map(Number);
+
+        /*get max heap sorted array for max value*/
+        var userMaxHeapArr = maxHeap(userArr.slice());
+        var maxValue = userMaxHeapArr[0];
+
+        /*make bars for graph*/
+        printGraph(userArr, maxValue);
+
+        /*print the array in a <p> element*/
+        document.getElementById('post-here').innerHTML = userArr;
+      }
+
+      /*print the max heap sorted graph*/
+      function maxHeapGraph(){
+        /*clear the div that contains the graph*/
+        document.getElementById('graph-cont').innerHTML = '';
+
+        /*get user input and make array*/
+        var userInp =  document.getElementById('user-input').value;
+        var userArr = userInp.split(',').map(Number);
+
+        /*get max heap sorted array for max value*/
+        var userMaxHeapArr = maxHeap(userArr.slice());
+        var maxValue = userMaxHeapArr[0];
+
+        /*make bars for graph*/
+        printGraph(userMaxHeapArr, maxValue);
+
+        /*print the array in a <p> element*/
+        document.getElementById('post-here').innerHTML = userMaxHeapArr;
+      }
+
+      function heapSortedGraph(){
+        /*clear the div that contains the graph*/
+        document.getElementById('graph-cont').innerHTML = '';
+
+
+        /*get user input and make array*/
+        var userInp =  document.getElementById('user-input').value;
+        var userArr = userInp.split(',').map(Number);
+
+        /*get sorted arrays*/
+        var userMaxHeapArr = maxHeap(userArr.slice());
+        var userHeapSortArr = heapSort(userMaxHeapArr.slice());
+        var maxValue = userMaxHeapArr[0];
+
+        /*make bars for graph*/
+        printGraph(userHeapSortArr, maxValue);
+
+        /*print the array in a <p> element*/
+        document.getElementById('post-here').innerHTML = userHeapSortArr;
+      }
+
+
+/*----------------------making the bars for the graph---------------------*/
+
+      /*create the bars for the graph and call animate functions*/
+      function printGraph(inpArr, maxValue){
+        var arrLength = inpArr.length;
+
+        /*create the bars(divs)*/
+        for(var i = 0; i < arrLength; i++){
+          var tempBar = document.createElement('div');
+          tempBar.id = 'bar' + i;                             /*create the id*/
+          tempBar.className = 'graph-bar';                    /*class name for css*/
+          tempBar.style.width = (100 / arrLength - 2) + '%';  /*make the bars equal width*/
+          tempBar.innerHTML = inpArr[i];                      /*put the value of the array in the div*/
+          document.getElementById('graph-cont').appendChild(tempBar);   /*append to the graph-cont div*/
+          horizAnimate(i, maxValue, inpArr);                  /*send the newly created div to the animate function*/
+        }
+      }
+
+
+
+
+
+/*----------------Animation functions-----------------------------*/
+
+      /*animate the bars moving horizantal*/
+      function horizAnimate(divIdNum, maxValue, inpArr){
+        /*find initial values to use for animation*/
+        var sectionWidth = document.getElementById('graph-cont').offsetWidth / inpArr.length;
+        var pos = 0;
+        var horizTimer = setInterval(move, 5); /*timer evokes move function every 5 ms*/
+
+        /*move each div until its position is attained*/
+        function move(){
+          if(pos >= (divIdNum * sectionWidth) + ((sectionWidth - document.getElementById('bar' + divIdNum).offsetWidth) / 2)){
+            clearInterval(horizTimer);           /*end the timer when the div is in position*/
+            if(divIdNum == (inpArr.length - 1)){  /*this if statement allows the bars to finish animating horizantal and then calls the vertical animate*/
+              vertAnimate(inpArr, maxValue);      /*call the vertical animate function*/
+            }
+
+          } else {
+            document.getElementById('bar' + divIdNum).style.left = pos; /*move the bar horixantal*/
+            pos++;
+          }
+        }
+      }
+
+      /*vertical animate function - move the bars up and down*/
+      function vertAnimate(inpArr, maxValue){
+        /*cycle through array and call the vertmove function*/
+        for (var i = 0; i < inpArr.length; i++){
+          vertMove(i, inpArr, maxValue);
+        }
+      }
+
+
+      /*function moves the bars up and down - has three nested functions*/
+      function vertMove(divIdNum, inpArr, maxValue){
+        /*values to find wheter bars need to move up or down from current function*/
+        var currentHeight = document.getElementById('bar' + divIdNum).offsetHeight;
+        var valHeight = (inpArr[divIdNum] / maxValue) * document.getElementById('graph-cont').offsetHeight;
+
+        /*timer for vertical movement which evokes upOrDwn function*/
+        var vertTimer = setInterval(upOrDown, 5);
+
+        /*checks to see if it should move up or down and calls proper function to move bars*/
+        function upOrDown(){
+          if (currentHeight > valHeight){
+            moveDown();
+          } else {
+            moveUp();
+          }
+        }
+
+        /*animates the bar up*/
+        function moveUp(){
+          if (currentHeight >= valHeight){
+            clearInterval(vertTimer);   /*clear the timer when bar is at proper height*/
+          } else {
+            document.getElementById('bar' + divIdNum).style.height = currentHeight + 'px';
+            currentHeight++;
+          }
+        }
+
+        /*animates the bar down*/
+        function moveDown(){
+          if (currentHeight <= valHeight){
+            clearInterval(vertTimer);   /*clear the timer when bar is at proper height*/
+          } else {
+            document.getElementById('bar' + divIdNum).style.height = currentHeight + 'px';
+            currentHeight--;
+          }
+        }
+      }
+
+
+
+/*-----------Heap Sort methods -------------------*/
+
+
+      /*getRoot function organizes the tree*/
+      function getRoot(valArr, pos, lastNode){
+        var left = 2*pos + 1;                           /*find left child*/
+        var right = 2*pos + 2;                         /*find right child*/
+        var max = pos;                                 /*max variable to know if parent and child were swapped*/
+
+
+        if (left < (valArr.length - lastNode) && valArr[max] < valArr[left]){
+          max = left;                                   /*check if left child value is larger than parent*/
+        }
+        if(right < (valArr.length - lastNode)  && valArr[max] < valArr[right]){
+          max = right;                                  /*check if right child value is larger than parent*/
+        }
+
+        if (max != pos){                                /*if something needs to be swapped*/
+          swap(valArr, max, pos);                       /*call swap function to switch values in array*/
+          getRoot(valArr, max, lastNode);               /*recursive call to organize child branches*/
+        }
+      }
+
+      /*swap function changes a values positions in the array*/
+      function swap(valArr, indexA, indexB){
+        var tempVal = valArr[indexA];                 /*temp val to store value to be swapped*/
+
+        valArr[indexA] = valArr[indexB];              /*make the swaps*/
+        valArr[indexB] = tempVal;
+      }
+
+
+      /*maxHeap function finds the last parent branch and cycles through array moving downwards from the floor*/
+      function maxHeap(valArr){
+        var floor = Math.floor(valArr.length/2);    /*find the last possible parent branch*/
+
+        for (var i = floor; i>=0; i--){
+          getRoot(valArr, i, 0);                    /*cycle through array and check if it needs to be swapped by sending to getRoot function*/
+        }
+        return valArr;                              /*returns a max heap sorted array*/
+      }
+
+
+      /*heapSort function will sort a max heap sorted array from smallest to largest*/
+      /*must be sent a max heap sorted array*/
+      function heapSort(valArr){
+        var lastArrPos = 0;                       /*this variable is used to stop cycling through array positions that have been sorted*/
+        for(var i = valArr.length - 1; i>0; i--){
+          swap(valArr, 0, i);                     /*swap the largest number [0] with the last position in array*/
+          lastArrPos++;                           /*used to not sort the last position of the array*/
+          getRoot(valArr, 0, lastArrPos);        /*re sort the remainder of the array to max heap for the next largest value*/
+        }
+        return valArr;                           /*return a smallest to largest array*/
+      }
+    </script>
+  </body>
+</html>

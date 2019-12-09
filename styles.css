@@ -1,0 +1,52 @@
+*{
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+.graph-cont{
+  width: 100%;
+  height: 300px;
+  background-color: gray;
+  margin-top: 50px;
+/*  padding: 15px;*/
+  -moz-transform: rotateX(180deg);
+  -ms-transform: rotateX(180deg);
+  -o-transform: rotate(180deg);
+  -webkit-transform: rotateX(180deg);
+  transform: rotateX(180deg);
+}
+
+.graph2-cont{
+  width: 100%;
+  height: 300px;
+  background-color: gray;
+}
+
+.graph-bar{
+  position: absolute;
+  left: 0;
+  top: 0;
+  font-size: .3em;
+  height: 150px;
+  background-color: red;
+  -moz-transform: rotateX(180deg);
+  -ms-transform: rotateX(180deg);
+  -o-transform: rotate(180deg);
+  -webkit-transform: rotateX(180deg);
+  transform: rotateX(180deg);
+}
+
+textarea{
+  height:200px;
+  width: 100%;
+}
+/*
+#Container,
+#Container>div {
+  -moz-transform: rotateX(180deg);
+  -ms-transform: rotateX(180deg);
+  -o-transform: rotate(180deg);
+  -webkit-transform: rotateX(180deg);
+  transform: rotateX(180deg);
+}
