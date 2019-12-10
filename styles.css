@@ -50,3 +50,21 @@ textarea{
   -webkit-transform: rotateX(180deg);
   transform: rotateX(180deg);
 }
+*/
+
+button {
+  padding: 15px 20px;
+  margin-top: 5px;
+  margin-left: 5px;
+  font-size: 12px;
+  border-radius: 5px;
+  background-color: #2ecc71;
+}
+
+button:hover {
+  background-color: #24a359;
+}
+
+
+
+
